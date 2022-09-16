@@ -1,3 +1,6 @@
+# CSV data
+*.csv
+
 # Logs
 logs
 *.log
