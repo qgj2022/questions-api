@@ -66,6 +66,21 @@ const updateHelpful = (text) => {
   return db.query(text)
 }
 
+const optimizingDbGET = (product_id, count, page) => {
+  return db.query(`SELECT json_build_object
+  ('question_id', q.questions_id, 'question_body', q.question_body, 'question_date', q.question_date,'asker_name', q.asker_name, 'question_helpfulness', q.question_helpfulness, 'reported', q.reported,
+  'answers', (
+  SELECT json_agg(
+    json_build_object('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', a.photos))
+  FROM answersSHORT AS a WHERE a.question_id = q.questions_id) )
+  FROM questionsSHORT AS q WHERE q.product_id=${product_id} AND q.reported='false' ORDER BY q.question_helpfulness DESC limit ${count};
+  `)
+}
+//offset ${offset}
+// SELECT json_build_object('question_id', q.questions_id, 'question_body', q.question_body, 'question_date', q.question_date, 'asker_name', q.asker_name, 'question_helpfulness', q.question_helpfulness, 'reported', q.reported, 'answers', (SELECT json_agg(json_build_object('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', a.photos)) FROM answersSHORT AS a WHERE a.question_id = q.questions_id) ) FROM questionsSHORT AS q WHERE q.product_id = 14 AND q.reported = 'false' ORDER BY q.question_helpfulness DESC;
+
+// limit 5
+module.exports.optimizingDbGET = optimizingDbGET;
 module.exports.updateHelpful = updateHelpful;
 module.exports.updateReport = updateReport;
 module.exports.makeNewQuestion = makeNewQuestion;
