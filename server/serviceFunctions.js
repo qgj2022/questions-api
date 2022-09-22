@@ -1,12 +1,16 @@
-const { getAllQuestions, getAllAnswers, makeNewQuestion, makeNewAnswer } = require('./dbQueries.js');
+const { getAllQuestions, getAllAnswers, makeNewQuestion, makeNewAnswer, optimizingDbGET } = require('./dbQueries.js');
+
+const optimizingTestGET = (product_id, count, page) => {
+  return optimizingDbGET(product_id, count, page);
+}
 
 const makeResponseGETqanda = async (product_id) => {
   // await startConnection()
-  console.log('inside makeResponseGETqanda ln 25')
+  // console.log('inside makeResponseGETqanda ln 25')
 
   async function f() {
     let data = await getAllQuestions(product_id)
-    console.log(`data is 28 ${data.rows}`)
+    // console.log(`data is 28 ${data.rows}`)
     let results = data.rows;
     let length = results.length;
     // let response = [];
@@ -18,12 +22,11 @@ const makeResponseGETqanda = async (product_id) => {
 
       let answers = answerQuery.rows;
       let lengthAnswers = answers.length;
-      for (let j=0; j < lengthAnswers; j++ ) {
+      for (let j = 0; j < lengthAnswers; j++) {
         let id = answers[j].id;
         results[i].answers[id] = answers[j];
       }
     }
-    console.log(`RESULTS ln 45 ${results}`)
     return results;
   }
 
@@ -46,10 +49,10 @@ const insertInto = (body, type) => {
     return makeNewQuestion(text, values)
   } else {
     let photos = "{";
-    body.photos.forEach((photoLink)=>{
+    body.photos.forEach((photoLink) => {
       photos += photoLink;
     });
-    photos +='}';
+    photos += '}';
     let text = `INSERT INTO answersSHORT (question_id, body, date, answerer_name, helpfulness, reported, answerer_email, photos) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`
     let values = [
       body.question_id,
@@ -65,5 +68,6 @@ const insertInto = (body, type) => {
   }
 }
 
+module.exports.optimizingTestGET = optimizingTestGET;
 module.exports.insertInto = insertInto;
 module.exports.makeResponseGETqanda = makeResponseGETqanda;
